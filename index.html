@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Afterthought: the moment after you scroll</title>
+<meta name="description" content="A mindful companion that pauses you after what you watch and weaves each reflection into a Tangaliya-inspired pattern.">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Afterthought">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#111111;--line:#E7E4DF;--tint:#F7F5F1;--maroon:#7E1F23;--red:#C2372E;--turmeric:#D9A21B;--indigo:#26408B;--leaf:#2F7A4B;--rose:#B8407F;--slate:#7D838F;--clay:#B5652B}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;overscroll-behavior:none}
+body{background:#EFECE7;color:var(--ink);font-family:Inter,system-ui,-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;-webkit-font-smoothing:antialiased;font-feature-settings:"cv11","ss01"}
+button,textarea,input{font:inherit;color:inherit}
+button,a,input,label{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button{-webkit-user-select:none;user-select:none}
+textarea,input{font-size:max(16px,1em)}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+a{color:var(--ink)}
+.phone{width:390px;height:844px;background:#fff;border-radius:46px;overflow:hidden;position:relative;display:flex;flex-direction:column;box-shadow:0 0 0 10px #111,0 30px 80px rgba(0,0,0,.25)}
+@media (max-width:520px){
+ body{display:block;background:#fff;position:fixed;inset:0;overflow:hidden}
+ .phone{width:100%;height:100vh;height:100dvh;border-radius:0;box-shadow:none}
+ .screen{padding-top:calc(env(safe-area-inset-top,0px) + 24px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 20px);padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+ .screen.flush{padding:0}
+ .tabs{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 6px)}
+ .feedbar{padding-top:calc(env(safe-area-inset-top,0px) + 10px)}
+ .post{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 56px)}
+ .toast{bottom:calc(env(safe-area-inset-bottom,0px) + 96px)}
+}
+.screen{flex:1;display:flex;flex-direction:column;padding:56px 24px 28px;overflow-y:auto;min-height:0;animation:enter .35s ease both}
+@keyframes enter{from{opacity:0;transform:translateY(8px)}}
+.flush{padding:0}
+.between{justify-content:space-between}
+.stack{display:flex;flex-direction:column}
+.row{display:flex;align-items:center}
+.wrap{flex-wrap:wrap}
+.spread{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.g4{gap:4px}.g6{gap:6px}.g8{gap:8px}.g10{gap:10px}.g12{gap:12px}.g14{gap:14px}.g16{gap:16px}.g20{gap:20px}.g24{gap:24px}.g28{gap:28px}.g32{gap:32px}
+h1,h2,h3,p{margin:0}
+.title{font-size:30px;font-weight:700;letter-spacing:-.8px;line-height:1.12}
+.title-xl{font-size:44px;font-weight:800;letter-spacing:-1.8px;line-height:1}
+.h2{font-size:20px;font-weight:700;letter-spacing:-.3px}
+.body{font-size:16px;line-height:1.55}
+.small{font-size:13px;line-height:1.45}
+.micro{font-size:11px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase}
+.q{font-size:27px;font-weight:600;letter-spacing:-.6px;line-height:1.2}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;height:56px;border-radius:28px;border:none;background:var(--ink);color:#fff;font-weight:600;font-size:17px;width:100%;transition:transform .12s}
+.btn:active{transform:scale(.98)}
+.btn:disabled{background:#D9D6D0;color:#111;cursor:not-allowed}
+.btn.light{background:#fff;color:var(--ink);border:1.5px solid var(--ink)}
+.ghost{height:44px;border:none;background:none;font-size:15px;font-weight:500;width:100%;text-decoration:underline;text-underline-offset:3px}
+.iconbtn{width:44px;height:44px;border:none;background:none;display:flex;align-items:center;justify-content:center;margin-left:-10px}
+.card{border:1.5px solid var(--line);border-radius:22px;padding:18px;background:#fff}
+.card.dotted{border:2px dotted #111}
+.tint{background:var(--tint);border-color:var(--tint)}
+.choice{text-align:left;padding:18px;border-radius:22px;border:1.5px solid var(--line);background:#fff;display:flex;gap:14px;width:100%;transition:border-color .15s,box-shadow .15s}
+.choice[aria-pressed=true]{border:2px solid var(--ink);box-shadow:0 6px 20px rgba(0,0,0,.08)}
+.chip{min-height:44px;padding:0 16px;border-radius:22px;border:1.5px solid var(--line);background:#fff;font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:8px;transition:all .15s}
+.chip[aria-pressed=true]{border-color:var(--ink);background:var(--ink);color:#fff}
+.chip .sw{width:10px;height:10px;border-radius:5px;display:inline-block}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px;padding:5px;border-radius:18px;background:var(--tint)}
+.seg button{height:42px;border:none;border-radius:14px;background:none;font-size:14px;font-weight:600}
+.seg button[aria-pressed=true]{background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.switch{position:relative;width:52px;height:32px;border-radius:16px;border:none;background:#D9D6D0;flex:none;transition:background .2s}
+.switch::after{content:"";position:absolute;left:3px;top:3px;width:26px;height:26px;border-radius:13px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s}
+.switch[aria-checked=true]{background:var(--ink)}
+.switch[aria-checked=true]::after{transform:translateX(20px)}
+.setrow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);padding:6px 10px 24px;border-top:1px solid var(--line);background:#fff;flex:none}
+.tabs button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0;font-size:11px;font-weight:500;background:none;border:none;opacity:.55}
+.tabs button[aria-current=page]{opacity:1;font-weight:700}
+input.word{width:100%;border:none;border-bottom:2px solid var(--ink);padding:6px 0 10px;font-size:30px;font-weight:700;letter-spacing:-.8px;background:none;border-radius:0}input.word:focus{outline:none}input.word::placeholder{color:#111;opacity:.25}
+.legend-row{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--line)}
+textarea{width:100%;resize:none;padding:16px;border-radius:18px;border:1.5px solid var(--line);background:#fff;font-size:17px;line-height:1.5}
+textarea:focus{outline:none;border-color:var(--ink)}
+textarea::placeholder{color:#111;opacity:.4}
+.d{transform-box:fill-box;transform-origin:center;animation:pop .5s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes pop{from{transform:scale(0);opacity:0}}
+.pulse{animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.25}50%{opacity:1}}
+.breathe{animation:breathe 8s ease-in-out infinite;transform-origin:center}
+@keyframes breathe{0%,100%{transform:scale(.72)}45%,55%{transform:scale(1)}}
+.spin{animation:spin 60s linear infinite;transform-origin:center}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.d,.pulse,.breathe,.spin,.screen,.sheet{animation:none!important}}
+.feed{flex:1;overflow-y:scroll;scroll-snap-type:y mandatory;background:#111;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.post{scroll-snap-stop:always}
+.post{height:100%;scroll-snap-align:start;position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:24px 20px 90px;color:#fff;overflow:hidden}
+.post .art{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.post .cap{position:relative;display:flex;flex-direction:column;gap:6px;text-shadow:0 1px 8px rgba(0,0,0,.35)}
+.feedbar{position:absolute;top:0;left:0;right:0;padding:52px 20px 12px;display:flex;justify-content:space-between;align-items:center;color:#fff;z-index:2;pointer-events:none}
+.feedbar button{pointer-events:auto}
+.sheet{position:absolute;inset:0;background:#fff;z-index:5;display:flex;flex-direction:column;animation:rise .45s cubic-bezier(.2,.9,.3,1) both}
+@keyframes rise{from{transform:translateY(100%)}}
+.slot{flex:1;min-height:50px;padding:0 14px;border-radius:16px;border:1.5px dashed #BDB8B0;background:#fff;font-size:14px;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.slot.filled{border:1.5px solid var(--ink)}
+.slot:disabled{cursor:default}
+.verdict{font-size:12px;font-weight:700;white-space:nowrap}
+.toast{position:absolute;left:20px;right:20px;bottom:104px;padding:13px 16px;border-radius:16px;background:#111;color:#fff;font-size:14px;font-weight:500;text-align:center;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;z-index:9}
+.toast.show{opacity:1;transform:none}
+.entry{border:1.5px solid var(--line);border-radius:22px;padding:16px;display:flex;gap:14px;background:#fff}
+.entry .words{font-size:16px;line-height:1.45;font-weight:500;white-space:pre-line;word-break:break-word}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:12px;background:var(--tint);font-size:12px;font-weight:600}
+.pill i{width:8px;height:8px;border-radius:4px;display:inline-block}
+.notice{border-radius:18px;padding:14px 16px;background:var(--tint);font-size:14px;line-height:1.5}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<main class="phone" id="app" aria-live="polite"></main>
+<script>
+(function(){
+'use strict';
+/* ---------- Tangaliya palette: threads ---------- */
+var T={ink:'#111111',maroon:'#7E1F23',red:'#C2372E',turmeric:'#D9A21B',indigo:'#26408B',leaf:'#2F7A4B',rose:'#B8407F',slate:'#7D838F',clay:'#B5652B',warp:'#D8D4CD'};
+var FEEL={Joy:T.turmeric,Calm:T.leaf,Surprise:T.rose,Fear:T.indigo,Sadness:'#3E6FB0',Anger:T.red,Disgust:T.clay,Numb:T.slate,Mixed:T.maroon};
+var WHEEL=[['Joy',['delighted','inspired','amused','grateful']],['Calm',['content','relieved','soothed','hopeful']],['Surprise',['amazed','confused','startled','curious']],['Fear',['anxious','insecure','overwhelmed','worried']],['Sadness',['lonely','disappointed','hurt','heavy']],['Anger',['frustrated','irritated','resentful','provoked']],['Disgust',['uneasy','judgmental','repelled','embarrassed']],['Numb',['bored','detached','indifferent','empty']]];
+var HEAVY=['Sadness','Fear','Anger','Disgust','Numb'];
+var QUESTIONS=['What is still with you from that?','Did it change what you think, or just confirm it?','Where did you notice it: head, chest, gut, or nowhere?','Would you want to see more of this? Why?','Who made this, and what did they want from you?','If a friend had shown you this in person, what would you have said?','What were you hoping to find when you opened the app?'];
+var INTENTIONS=['Notice how my feed makes me feel','Scroll less on autopilot','Sleep better at night','Feel less numb to the news','Spend more time with people','Just curious'];
+var APPS=['Instagram','YouTube','X','Snapchat','Reddit','Facebook'];
+var POSTS=[
+ {id:'p1',who:'@citydesk.news',kind:'News',title:'Floods displace thousands in [city]',bg:'#26408B',m:'diamond'},
+ {id:'p2',who:'@daily.memes',kind:'Meme',title:'Me pretending Monday is a fresh start',bg:'#D9A21B',m:'ladwa'},
+ {id:'p3',who:'@riya.travels',kind:'Friend',title:'Goa with the gang. Missed you!',bg:'#2F7A4B',m:'naughara'},
+ {id:'p4',who:'Sponsored · Stride',kind:'Ad',title:'Only 3 pairs left. Don’t miss out.',bg:'#C2372E',m:'chopad'},
+ {id:'p5',who:'@prank.central',kind:'Reel',title:'He did NOT see that coming',bg:'#B8407F',m:'diamond'},
+ {id:'p6',who:'@ammas.kitchen',kind:'Reel',title:'10-minute dal that tastes like home',bg:'#B5652B',m:'ladwa'},
+ {id:'p7',who:'@grind.daily',kind:'Reel',title:'I wake up at 4 am. Here’s why you should too.',bg:'#111111',m:'chopad'},
+ {id:'p8',who:'@paws.rescue',kind:'Reel',title:'Day 1 vs day 30 after rescue',bg:'#7E1F23',m:'naughara'},
+ {id:'p9',who:'@topper.tips',kind:'Reel',title:'How I scored 99% without studying much',bg:'#3E6FB0',m:'diamond'},
+ {id:'p10',who:'@debate.now',kind:'Thread',title:'Unpopular opinion that will make you angry',bg:'#7D838F',m:'chopad'}
+];
+var SAMPLE=[
+ {id:'s1',sample:true,t:Date.now()-3600e3*2,source:'Instagram · Reel',post:'10-minute dal that tastes like home',words:'Homesick — made me want to call my mother, not just cook.',core:'Joy',nuance:'grateful',level:3,worth:true},
+ {id:'s2',sample:true,t:Date.now()-3600e3*3,source:'X · Post',post:'Floods displace thousands in [city]',words:'Guilty — I scrolled past it in a second. I don’t know if anyone is okay.',core:'Sadness',nuance:'heavy',level:4,worth:true},
+ {id:'s3',sample:true,t:Date.now()-3600e3*26,source:'YouTube · Short',post:'I wake up at 4 am. Here’s why you should too.',words:'Behind — I don’t want to wake at 4, and that’s fine.',core:'Fear',nuance:'insecure',level:3,worth:false},
+ {id:'s4',sample:true,t:Date.now()-3600e3*27,source:'Instagram · Post',post:'Goa with the gang. Missed you!',words:'Both — happy for her, also a little left out.',core:'Mixed',nuance:'',level:2,worth:true},
+ {id:'s7',sample:true,frayed:true,t:Date.now()-3600e3*27.5,source:'Instagram',post:'',words:'',core:null},
+ {id:'s5',sample:true,t:Date.now()-3600e3*50,source:'Instagram · Reel',post:'He did NOT see that coming',words:'Nothing.',core:'Numb',nuance:'empty',level:1,worth:false},
+ {id:'s6',sample:true,skip:true,t:Date.now()-3600e3*51,source:'Instagram',post:'',words:'',core:null},
+ {id:'s8',sample:true,t:Date.now()-3600e3*52,source:'Instagram · Reel',post:'Day 1 vs day 30 after rescue',words:'Soft. Watched it twice on purpose.',core:'Calm',nuance:'hopeful',level:4,worth:true}
+];
+function dayKey(t){var d=new Date(t);return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+var SAMPLE_SCROLL={};SAMPLE_SCROLL[dayKey(Date.now())]=45;SAMPLE_SCROLL[dayKey(Date.now()-3600e3*27)]=80;SAMPLE_SCROLL[dayKey(Date.now()-3600e3*51)]=35;
+var CRISIS=/(kill myself|killing myself|suicid|end my life|end it all|want to die|wanna die|self[- ]?harm|hurt myself|cut myself|no reason to live|better off dead)/i;
+
+/* ---------- storage ---------- */
+var KEY='afterthought.v3';
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){return null}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(P))}catch(e){}}
+var P=load()||{onboarded:false,intentions:[],apps:['Instagram','YouTube'],perm:'full',mode:'reflect',count:10,breath:true,quiet:true,adaptive:true,lock:false,dayOff:false,tapOnly:false,escapes:0,scrolled:JSON.parse(JSON.stringify(SAMPLE_SCROLL)),entries:SAMPLE.slice(),pauses:0};
+var S={screen:P.onboarded?(P.lock?'lock':'today'):'welcome',onb:0,feedIdx:0,seen:[],feedRun:null,pause:null,step:'write',q:Math.floor(Math.random()*QUESTIONS.length),text:'',word:'',more:false,backoff:false,core:null,nuance:null,level:3,worth:null,nudge:false,crisis:false,placed:[],checked:false,pool:[],filter:'all',choice:null,confirmDelete:false,lastMode:'recall'};
+var app=document.getElementById('app');
+
+/* ---------- helpers ---------- */
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function ap(b){return 'aria-pressed="'+(b?'true':'false')+'"'}
+function sw(on,key,label){return '<button class="switch" role="switch" aria-checked="'+(on?'true':'false')+'" aria-label="'+label+'" data-toggle="'+key+'"></button>'}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=a[i];a[i]=a[j];a[j]=x}return a}
+function when(t){var d=(Date.now()-t)/36e5;if(d<0.02)return 'Just now';if(d<1)return Math.round(d*60)+' min ago';if(d<24)return Math.round(d)+' h ago';if(d<48)return 'Yesterday';return Math.floor(d/24)+' days ago'}
+function greet(){var h=new Date().getHours();return h<5?'Still up?':h<12?'Good morning':h<17?'Good afternoon':h<21?'Good evening':'Winding down?'}
+function written(){return P.entries.filter(function(e){return !e.skip})}
+
+/* ---------- daana motifs (SVG) ----------
+   Weave grammar
+   SHAPE  = kind of feeling, on the valence x energy map (Russell's circumplex of affect),
+            drawn with traditional Tangaliya motif names:
+            Mor (peacock)       pleasant + lively   : Joy, Surprise
+            Ladwa (laddoo)      pleasant + calm     : Calm
+            Mor pag (peacock foot) unpleasant + tense : Fear, Anger, Disgust
+            Naughara (nine-house) unpleasant + low  : Sadness
+            Chopad (crossroads) mixed               : Mixed
+            Plain line          numb                : Numb
+            Single knot         felt, not named     : I can't tell
+            Empty knot          skipped honestly
+            Loose thread        pretended (keyboard mash)
+   COLOUR = the specific feeling (thread colour)
+   SIZE   = strength 1-5 (more dots)
+   FILL   = solid: worth my time / outline: not worth it
+   ROWS   = one row per day, knots left to right in the order they happened
+   MAROON LINE = end of a day (after the maroon bands of Ramraj Tangaliya)
+   GREY WARP   = one thread per 5 posts scrolled that day
+*/
+/* Picture motifs: each feeling is drawn as a Tangaliya motif from daily life, in daana dots. */
+var BM={
+ ambo:["....#.#.#....","..#.#.#.#.#..",".#.#.#.#.#.#.","#.#.#.#.#.#.#",".#.#.#.#.#.#.","..#.#.#.#.#..","....#.#.#....","......#......","......#......","......#......","......#......",".....#.#.....","....#...#...."],
+ chakalo:["#...........#",".#.........#.","..#.......#..","..##.....##..","...##...##...","....##.##....",".....###.##..","....######...","...#####.....","....###......",".....#.#....."],
+ teer:["....#####....",".....###.....","......#......","#...........#","##.........##","###...#...###","##.........##","#...........#","......#......",".....###.....","....#####...."],
+ morpag:["#.....#.....#",".#....#....#.","..#...#...#..","...#..#..#...","....#.#.#....",".....###.....","......#......","......#......","......#......"],
+ naughara:["###.###.###","#.#.#.#.#.#","###.###.###","...........","###.###.###","#.#.#.#.#.#","###.###.###","...........","###.###.###","#.#.#.#.#.#","###.###.###"],
+ chopad:["....#.#.#....","....#####....","....#.#.#....","....#####....","#####...#####","#.#.#...#.#.#","#####...#####","....#####....","....#.#.#....","....#####....","....#.#.#...."]
+};
+function centre(p){var x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;p.forEach(function(q){x0=Math.min(x0,q[0]);x1=Math.max(x1,q[0]);y0=Math.min(y0,q[1]);y1=Math.max(y1,q[1])});var cx=(x0+x1)/2,cy=(y0+y1)/2;return p.map(function(q){return [q[0]-cx,q[1]-cy,q[2]]})}
+function picPts(type){var p=[],a,i,k;
+ if(BM[type]){BM[type].forEach(function(r,y){for(var x=0;x<r.length;x++)if(r[x]==='#')p.push([x,y,0])})}
+ else if(type==='mor'){for(i=0;i<9;i++){a=(200+i*17.5)*Math.PI/180;[[3.2,0],[4.6,0],[6,1]].forEach(function(q){p.push([6+Math.cos(a)*q[0],6.6+Math.sin(a)*q[0],q[1]])})}[[6,5.6],[6,4.6],[5.4,3.6],[6.6,3.6],[6,3.3],[5.4,6.6],[6.6,6.6],[6,7.4],[5.5,8.4],[6.5,8.4],[5.2,9.6],[6.8,9.6]].forEach(function(q){p.push([q[0],q[1],0])})}
+ else if(type==='khajuri'){[-1,1].forEach(function(sd){[[1,-.4],[2,-.5],[3,-.3],[4,.2],[4.8,.9],[5.4,1.8],[.8,-1.1],[1.6,-2],[2.6,-2.6],[3.6,-2.8]].forEach(function(d){p.push([6+sd*d[0],3.6+d[1],0])})});p.push([6,2.6,0],[6,1.6,0],[6,.6,0],[6,3.6,1]);for(k=0;k<7;k++)p.push([6+0.25*Math.sin(k*.9),4.8+k*1.05,0])}
+ return centre(p)}
+var PICS=['mor','ambo','chakalo','teer','khajuri','morpag','naughara','chopad'];
+var MEANING={
+ mor:{name:'Mor',en:'peacock',feel:'Joy',why:'A peacock dancing. Joy is the dance.'},
+ ambo:{name:'Ambo',en:'mango tree',feel:'Calm',why:'A tree to rest under. Calm is sitting still.'},
+ chakalo:{name:'Chakalo',en:'sparrow',feel:'Surprise',why:'A sparrow taking off. Surprise is the sudden lift.'},
+ teer:{name:'Arrowheads',en:'pointing inward',feel:'Fear',why:'Closing in on one dot: you.'},
+ khajuri:{name:'Khajuri',en:'date palm',feel:'Anger',why:'A palm with thorny fronds. Anger is heat that pricks.'},
+ morpag:{name:'Mor pag',en:'peacock’s foot',feel:'Disgust',why:'The part of the peacock it looks away from.'},
+ naughara:{name:'Naughara',en:'houses',feel:'Sadness',why:'Rows of empty rooms. Something is missing.'},
+ chopad:{name:'Chopad',en:'game board',feel:'Mixed',why:'A crossroads. Pulled two ways at once.'},
+ row:{name:'Plain weave',en:'no daana',feel:'Numb',why:'Nothing tied in. Nothing felt.'},
+ knot:{name:'A single daana',en:'one knot',feel:'I can’t tell',why:'Something was there, not yet named.'},
+ hollow:{name:'An empty knot',en:'a gap',feel:'Skipped',why:'Skipping honestly still counts.'},
+ frayed:{name:'A loose thread',en:'didn’t hold',feel:'Pretended',why:'A rushed answer, kept so the weave stays true.'}
+};
+function pts(type,level){var p=[],L=Math.max(1,Math.min(5,level||3)),k,i;
+ if(type==='ladwa'){p.push([0,0]);var rs=L<=2?[2.2]:L===3?[2.2,4.2]:L===4?[2.2,4.2,6.2]:[1.6,3.4,5,6.6];rs.forEach(function(r,j){var n=6+j*6;for(var q=0;q<n;q++){var a=q/n*Math.PI*2;p.push([Math.cos(a)*r,Math.sin(a)*r])}})}
+ else if(type==='mor'){var n=L<=2?3:L===3?5:7,per=L<=2?2:L===3?3:L===4?3:4;p.push([0,3.4],[0,4.9]);for(i=0;i<n;i++){var a=(-160+i*(140/(n-1)))*Math.PI/180;for(k=1;k<=per;k++){var r=0.4+k*1.55;p.push([Math.cos(a)*r,1.9+Math.sin(a)*r])}}}
+ else if(type==='morpag'){var per2=L<=2?2:L===3?3:L===4?4:5;p.push([0,1.8]);[-90,-142,-38].forEach(function(dg){var a=dg*Math.PI/180;for(k=1;k<=per2;k++)p.push([Math.cos(a)*k*1.28,1.8+Math.sin(a)*k*1.28])});for(k=1;k<=Math.max(1,per2-2);k++)p.push([0,1.8+k*1.28])}
+ else if(type==='naughara'){for(var gx=-1;gx<=1;gx++){for(var gy=-1;gy<=1;gy++){if(L<=2&&gx!==0&&gy!==0)continue;var quad=(L>=4||(L===3&&(gx===0||gy===0)))?[[-.55,-.55],[.55,-.55],[-.55,.55],[.55,.55]]:[[0,0]];quad.forEach(function(o){p.push([gx*3+o[0],gy*3+o[1]])})}}}
+ else if(type==='chopad'){var n2=L<=2?2:L===3?3:L===4?4:5;p.push([0,0]);for(i=1;i<=n2;i++){p.push([i*1.2,0],[-i*1.2,0],[0,i*1.2],[0,-i*1.2])}if(L>=3){p.push([1.6,1.6],[-1.6,1.6],[1.6,-1.6],[-1.6,-1.6])}}
+ else if(type==='row'){for(k=-3;k<=3;k++)p.push([k*1.4,0])}
+ else if(type==='knot'){p.push([0,0]);for(i=0;i<6;i++){var b=i/6*Math.PI*2;p.push([Math.cos(b)*1.8,Math.sin(b)*1.8])}}
+ else if(type==='frayed'){p=[[-4.6,0],[-3.2,0],[-1.8,.15],[.4,-.5],[1.9,.5],[3.1,1.5],[3.9,2.8]]}
+ else if(type==='hollow'){p.push([0,0])}
+ else if(type==='diamond'){var rings=L<=2?[0,2]:L===3?[0,2,4]:[0,2,4,6];rings.forEach(function(kk){if(kk===0){p.push([0,0]);return}for(var x=-kk;x<=kk;x++){var y=kk-Math.abs(x);p.push([x,y]);if(y!==0)p.push([x,-y])}})}
+ return p}
+var SHAPE={Joy:'mor',Calm:'ambo',Surprise:'chakalo',Fear:'teer',Anger:'khajuri',Disgust:'morpag',Sadness:'naughara',Mixed:'chopad',Numb:'row'};
+function motifFor(e){if(e.skip)return'hollow';if(e.frayed)return'frayed';if(!e.core)return'knot';return SHAPE[e.core]||'knot'}
+function colorFor(e){if(e.frayed)return T.slate;return e.core?FEEL[e.core]:T.ink}
+function motif(type,color,size,level,opts){opts=opts||{};var pic=PICS.indexOf(type)>=0,L=Math.max(1,Math.min(5,level||3)),list=pic?picPts(type):pts(type,level),span=pic?13.5/(0.55+0.09*L):(type==='naughara'?9.4:13.5),u=size/span,r=Math.max(pic?1.2:1.6,u*(pic?0.4:0.36)),c=size/2,delay=opts.delay||0,anim=opts.anim!==false;
+ var s='<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'" aria-hidden="true">';
+ if(type==='hollow'){s+='<circle cx="'+c+'" cy="'+c+'" r="'+(size*0.13)+'" fill="none" stroke="'+T.ink+'" stroke-width="1.5" stroke-dasharray="2 3" '+(anim?'class="d" style="animation-delay:'+delay+'ms"':'')+'/>'}
+ else list.forEach(function(q,i){var fill=(i===0&&opts.heart&&!pic)?opts.heart:color,rr=q[2]?r*1.4:r;s+='<circle cx="'+(c+q[0]*u).toFixed(1)+'" cy="'+(c+q[1]*u).toFixed(1)+'" r="'+(opts.outline?Math.max(1.1,rr*0.85):rr).toFixed(1)+'" '+(opts.outline?'fill="#fff" stroke="'+fill+'" stroke-width="1.2"':'fill="'+fill+'"')+(anim?' class="d" style="animation-delay:'+(delay+i*18)+'ms"':'')+'/>'});
+ return s+'</svg>'}
+function meaningFor(e){return MEANING[motifFor(e)]}
+function knotFor(e,size,opts){opts=opts||{};return motif(motifFor(e),colorFor(e),size,e.level||3,{outline:e.worth===false,delay:opts.delay,anim:opts.anim,heart:opts.heart})}
+function daanaRow(w,opts){opts=opts||{};var n=Math.floor(w/12),s='<svg width="'+w+'" height="10" viewBox="0 0 '+w+' 10" aria-hidden="true">';for(var i=0;i<n;i++){var big=i%6===3;s+='<circle cx="'+(6+i*12)+'" cy="5" r="'+(big?3:1.8)+'" fill="'+(big?T.maroon:T.ink)+'"'+(opts.anim?' class="d" style="animation-delay:'+(i*20)+'ms"':'')+'/>'}return s+'</svg>'}
+function logo(size){return motif('diamond',T.ink,size,3,{heart:T.maroon,delay:100})}
+function ring(size,n,color,cls){var c=size/2,r=size/2-6,s='<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'" aria-hidden="true" class="'+(cls||'')+'">';for(var i=0;i<n;i++){var a=i/n*Math.PI*2;s+='<circle cx="'+(c+Math.cos(a)*r).toFixed(1)+'" cy="'+(c+Math.sin(a)*r).toFixed(1)+'" r="'+(i%4===0?3.4:2.2)+'" fill="'+(i%4===0?T.maroon:color)+'"/>'}return s+'</svg>'}
+function dayLabel(k){if(k===dayKey(Date.now()))return 'Today';if(k===dayKey(Date.now()-864e5))return 'Yest.';var q=k.split('-'),d=new Date(+q[0],+q[1]-1,+q[2]);return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]}
+function weave(entries,w,opts){opts=opts||{};var cell=opts.cell||46,lab=opts.labels===false?0:44,per=Math.max(1,Math.floor((w-lab)/cell)),groups={},order=[],scrolled=opts.scrolled||P.scrolled||{};
+ entries.slice().sort(function(a,b){return a.t-b.t}).forEach(function(e){var k=dayKey(e.t);if(!groups[k]){groups[k]=[];order.push(k)}groups[k].push(e)});
+ var tk=dayKey(Date.now());if(opts.today&&order[order.length-1]!==tk){order.push(tk);groups[tk]=[]}
+ var blocks=order.map(function(k){var n=groups[k].length+(k===tk&&opts.next?1:0);return {k:k,lines:Math.max(1,Math.ceil(n/per))}});
+ var h=blocks.reduce(function(a,b){return a+b.lines*cell},0)+(blocks.length-1)*10,y=0,idx=0;
+ var s='<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Weave of '+entries.length+' knots across '+blocks.length+' day'+(blocks.length===1?'':'s')+'">';
+ blocks.forEach(function(b,bi){var bh=b.lines*cell,list=groups[b.k],posts=scrolled[b.k]||list.length*6,warps=Math.min(40,Math.ceil(posts/5)),span=w-lab;
+  for(var t=0;t<warps;t++){var x=lab+span*(t+0.5)/warps;s+='<line x1="'+x.toFixed(1)+'" x2="'+x.toFixed(1)+'" y1="'+(y+3)+'" y2="'+(y+bh-3)+'" stroke="#E9E5DF" stroke-width="1"/>'}
+  if(lab)s+='<text x="0" y="'+(y+cell/2+4)+'" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#111">'+dayLabel(b.k)+'</text>';
+  list.forEach(function(e,i){var cx=lab+(i%per)*cell,cy=y+Math.floor(i/per)*cell;s+='<g transform="translate('+cx+','+cy+')">'+knotFor(e,cell,{delay:(opts.anim?idx*70:0),anim:!!opts.anim}).replace(/<svg[^>]*>|<\/svg>/g,'')+'</g>';idx++});
+  if(b.k===tk&&opts.next){var i2=list.length,cx2=lab+(i2%per)*cell+cell/2,cy2=y+Math.floor(i2/per)*cell+cell/2;for(var z=0;z<3;z++)s+='<circle class="pulse" style="animation-delay:'+(z*300)+'ms" cx="'+(cx2+(z-1)*8)+'" cy="'+cy2+'" r="2" fill="#111"/>'}
+  y+=bh;if(bi<blocks.length-1){s+='<line x1="0" x2="'+w+'" y1="'+(y+5)+'" y2="'+(y+5)+'" stroke="'+T.maroon+'" stroke-width="2"/>';y+=10}});
+ return s+'</svg>'}
+var I={
+ back:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>',
+ close:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+ refresh:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>',
+ today:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="4" r="1.3" fill="currentColor"/><circle cx="12" cy="20" r="1.3" fill="currentColor"/><circle cx="4" cy="12" r="1.3" fill="currentColor"/><circle cx="20" cy="12" r="1.3" fill="currentColor"/></svg>',
+ journal:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M9 9h6M9 13h4"/></svg>',
+ weave:'<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><circle cx="12" cy="4" r="1.6"/><circle cx="8" cy="8" r="1.6"/><circle cx="16" cy="8" r="1.6"/><circle cx="4" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="20" cy="12" r="1.6"/><circle cx="8" cy="16" r="1.6"/><circle cx="16" cy="16" r="1.6"/><circle cx="12" cy="20" r="1.6"/></svg>',
+ gear:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>',
+ lock:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+ eye:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+ phone:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>',
+ up:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>'
+};
+function head(back,label){return '<div class="spread" style="min-height:44px">'+(back?'<button class="iconbtn" data-go="'+back+'" aria-label="Back">'+I.back+'</button>':'<span></span>')+(label?'<span class="micro">'+label+'</span>':'')+'</div>'}
+function tabs(cur){return '<nav class="tabs" aria-label="Main">'+[['today','Today',I.today],['journal','Journal',I.journal],['weave','Weave',I.weave],['settings','Settings',I.gear]].map(function(x){return '<button data-go="'+x[0]+'" '+(cur===x[0]?'aria-current="page"':'')+'>'+x[2]+x[1]+'</button>'}).join('')+'</nav>'}
+
+/* ---------- onboarding ---------- */
+function welcome(){return '<section class="screen between" style="padding-top:72px">'+
+ '<div class="stack g28"><div class="row" style="justify-content:space-between">'+logo(64)+'<span class="micro" style="opacity:.6">Daana · Tangaliya</span></div>'+
+ '<div class="stack g12"><h1 class="title-xl">after&shy;thought</h1><p class="h2" style="font-weight:500;letter-spacing:-.2px">The moment after you scroll.</p></div>'+
+ '<p class="body">Feeds are built so you never stop. Afterthought gives you a pause after what you watch: a few open questions, never answers.</p>'+
+ '<div class="card dotted stack g12" style="align-items:center;padding:22px">'+weave(SAMPLE,300,{anim:true,cell:42,scrolled:SAMPLE_SCROLL})+'<p class="small" style="text-align:center">Every pause ties one dot, a <b>daana</b>, into your weave. Its shape shows what you felt.</p></div>'+
+ '</div><div class="stack g10" style="margin-top:24px"><button class="btn" data-go="intent">Begin</button><p class="small" style="text-align:center">Visual language inspired by Tangaliya daana weaving, Gujarat.</p></div></section>'}
+
+function intent(){return '<section class="screen between"><div class="stack g24">'+head('welcome','1 of 3')+
+ '<div class="stack g10"><h1 class="title">Why are you here?</h1><p class="body">Pick what matters to you. Afterthought will remind you of it, in your own words, when it counts.</p></div>'+
+ '<div class="stack g10">'+INTENTIONS.map(function(x){var on=P.intentions.indexOf(x)>=0;return '<button class="choice" style="padding:15px 18px;align-items:center" data-intent="'+esc(x)+'" '+ap(on)+'>'+motif('diamond',on?T.maroon:T.ink,22,1,{anim:false})+'<span style="font-size:15px;font-weight:'+(on?700:500)+'">'+x+'</span></button>'}).join('')+'</div>'+
+ '</div><div class="stack g8" style="margin-top:20px"><button class="btn" data-go="see" '+(P.intentions.length?'':'disabled')+'>Continue</button></div></section>'}
+
+function see(){var f=P.perm==='full';return '<section class="screen between"><div class="stack g20">'+head('intent','2 of 3')+
+ '<div class="stack g10"><h1 class="title">What can it see?</h1><p class="body">You decide, and you can change it anytime.</p></div>'+
+ '<div class="stack g10"><span class="micro">Watch these apps</span><div class="row wrap g8">'+APPS.map(function(a){return '<button class="chip" data-app="'+a+'" '+ap(P.apps.indexOf(a)>=0)+'>'+a+'</button>'}).join('')+'</div></div>'+
+ '<button class="choice" style="flex-direction:column;gap:8px" data-set="perm" data-val="full" '+ap(f)+'><span class="spread" style="width:100%"><span class="h2" style="font-size:18px">Full mode</span><span class="pill">Best for Recall</span></span><span class="small">Notices which posts you watch in the apps above, so questions refer to the real post and Recall can check your answers.</span></button>'+
+ '<button class="choice" style="flex-direction:column;gap:8px" data-set="perm" data-val="light" '+ap(!f)+'><span class="h2" style="font-size:18px">Light mode</span><span class="small">Never sees content. Steps in based on time spent in those apps. Recall becomes a memory-only self check.</span></button>'+
+ '<div class="notice stack g8"><span class="row g8" style="font-weight:600">'+I.lock+'Our promises</span><span class="small">Everything is processed and stored on your phone. Nothing is uploaded, sold or used for ads. Delete it all in one tap. No one else, not even a parent account, can read your journal.</span></div>'+
+ '</div><div style="margin-top:20px"><button class="btn" data-go="rhythm" '+(P.apps.length?'':'disabled')+'>Continue</button></div></section>'}
+
+function rhythm(){return '<section class="screen between"><div class="stack g20">'+head('see','3 of 3')+
+ '<div class="stack g10"><h1 class="title">Set your rhythm</h1><p class="body">Gentle enough to keep, firm enough to notice.</p></div>'+
+ '<div class="stack g8"><span class="micro">How to pause</span><div class="seg" role="group">'+[['reflect','Reflect'],['recall','Recall'],['both','Both']].map(function(m){return '<button data-set="mode" data-val="'+m[0]+'" '+ap(P.mode===m[0])+'>'+m[1]+'</button>'}).join('')+'</div><p class="small">'+(P.mode==='reflect'?'Write a few words about what you just saw.':P.mode==='recall'?'List what you saw, in order. A small memory game.':'Alternate between writing and remembering.')+'</p></div>'+
+ '<div class="stack g8"><span class="micro">Pause me after</span><div class="seg" role="group">'+[5,10,15].map(function(n){return '<button data-set="count" data-val="'+n+'" '+ap(P.count===n)+'>'+n+' posts</button>'}).join('')+'</div></div>'+
+ '<div class="stack"><div class="setrow"><span class="stack g4"><b style="font-size:15px">Skip with one breath</b><span class="small">Skipping is always allowed, after 5 seconds.</span></span>'+sw(P.breath,'breath','Skip with one breath')+'</div>'+
+ '<div class="setrow"><span class="stack g4"><b style="font-size:15px">Adaptive rhythm</b><span class="small">Pauses less when you’re already mindful, more after long sessions. Never twice within 3 minutes.</span></span>'+sw(P.adaptive,'adaptive','Adaptive rhythm')+'</div>'+
+ '<div class="setrow" style="border:none"><span class="stack g4"><b style="font-size:15px">Quiet while working</b><span class="small">No pauses 9 am to 6 pm on weekdays.</span></span>'+sw(P.quiet,'quiet','Quiet while working')+'</div></div>'+
+ '</div><div style="margin-top:16px"><button class="btn" data-act="finishonb">Start weaving</button></div></section>'}
+
+/* ---------- home ---------- */
+function today(){var es=P.entries,wr=written(),todays=es.filter(function(e){return dayKey(e.t)===dayKey(Date.now())});
+ var intentLine=P.intentions[0]||'Notice how my feed makes me feel';
+ return '<div class="screen" style="padding-bottom:20px"><div class="stack g20">'+
+ '<div class="spread"><span class="micro">'+greet()+'</span>'+motif('diamond',T.ink,26,1,{heart:T.maroon})+'</div>'+
+ '<div class="stack g8"><p class="small" style="font-weight:600">You said you’re here to</p><h1 class="title" style="font-size:26px">“'+esc(intentLine)+'.”</h1></div>'+
+ (P.dayOff?'<div class="notice spread"><span><b>Day off.</b> No pauses until tomorrow. Enjoy it.</span><button class="chip" data-toggle="dayOff">Resume</button></div>':'')+
+ '<div class="card dotted stack g14" style="padding:20px"><div class="spread"><b style="font-size:15px">Today’s weave</b><span class="small">'+todays.length+' knot'+(todays.length===1?'':'s')+'</span></div>'+weave(todays,302,{anim:true,next:true,today:true})+'</div>'+
+ '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">'+stat(P.pauses+es.length,'pauses')+stat(wr.length,'written')+stat(wr.filter(function(e){return e.worth}).length,'worth it')+'</div>'+
+ '<button class="btn" data-act="openfeed" '+(P.dayOff?'disabled':'')+'>'+I.up+'Open a demo feed</button>'+
+ '<p class="small" style="text-align:center">In the real app this happens inside '+esc(P.apps.join(', '))+'. Here, scroll the demo feed and Afterthought will step in after 5 posts.</p>'+
+ (!P.dayOff?'<button class="ghost" data-toggle="dayOff">Take today off, no guilt</button>':'')+
+ '</div></div>'+tabs('today')}
+function stat(n,l){return '<div class="card tint stack g4" style="padding:14px"><b style="font-size:26px;letter-spacing:-.5px">'+n+'</b><span class="small">'+l+'</span></div>'}
+
+/* ---------- demo feed ---------- */
+function feed(){var run=S.feedRun;return '<div class="screen flush" style="position:relative;background:#111">'+
+ '<div class="feedbar"><button class="iconbtn" style="color:#fff;margin-left:-10px" data-act="leavefeed" aria-label="Leave feed">'+I.close+'</button><span class="micro" style="color:#fff">Demo feed · '+S.seen.length+'/'+run.limit+'</span><span style="width:24px"></span></div>'+
+ '<div class="feed" id="feed">'+run.posts.map(function(p,i){return '<article class="post" data-pid="'+p.id+'" style="background:'+p.bg+'"><div class="art">'+motif(p.m,'rgba(255,255,255,.9)',260,5,{anim:false})+'</div><div class="cap"><span style="font-size:13px;font-weight:700">'+esc(p.who)+' · '+p.kind+'</span><span style="font-size:22px;font-weight:700;letter-spacing:-.4px;line-height:1.2">'+esc(p.title)+'</span>'+(i===0?'<span style="font-size:13px;opacity:.85">Swipe up to keep scrolling</span>':'')+'</div></article>'}).join('')+'</div></div>'}
+function startFeed(){var posts=shuffle(POSTS).slice(0,7);S.feedRun={posts:posts,limit:5};S.seen=[];go('feed')}
+function watchFeed(){var el=document.getElementById('feed');if(!el||!('IntersectionObserver' in window))return;var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){var id=en.target.dataset.pid;if(S.seen.indexOf(id)<0){S.seen.push(id);var c=app.querySelector('.feedbar .micro');if(c)c.textContent='Demo feed · '+S.seen.length+'/'+S.feedRun.limit;if(S.seen.length>=S.feedRun.limit){io.disconnect();setTimeout(openPause,900)}}}})},{root:el,threshold:.6});el.querySelectorAll('.post').forEach(function(p){io.observe(p)})}
+function openPause(){if(S.screen!=='feed')return;var mode=P.mode==='both'?(S.lastMode==='reflect'?'recall':'reflect'):P.mode;S.lastMode=mode;var seenPosts=S.seen.map(function(id){return POSTS.filter(function(p){return p.id===id})[0]});
+ var dk=dayKey(Date.now());P.scrolled[dk]=(P.scrolled[dk]||0)+S.seen.length;persist();S.pause={mode:mode,posts:seenPosts,last:seenPosts[seenPosts.length-1]};resetReflect();S.backoff=P.escapes>=3;if(mode==='reflect'&&P.tapOnly)S.step='name';S.placed=[];S.checked=false;
+ var decoys=shuffle(POSTS.filter(function(p){return S.seen.indexOf(p.id)<0})).slice(0,2);S.pool=shuffle(seenPosts.concat(decoys));go('pause')}
+function resetReflect(){S.step='write';S.text='';S.word='';S.more=false;S.core=null;S.nuance=null;S.level=3;S.worth=null;S.nudge=false;S.crisis=false;S.q=(S.q+1)%QUESTIONS.length}
+
+/* ---------- pause: reflect ---------- */
+function pause(){if(!S.pause)return today();if(S.crisis)return crisis();if(S.backoff)return backoff();if(S.pause.mode==='recall')return recall();if(S.step==='name')return name();if(S.step==='done')return done();
+ var p=S.pause.last,full=P.perm==='full';
+ return '<section class="screen between" style="padding-top:44px"><div class="stack g20">'+
+ '<div class="stack g12" style="align-items:center;padding-top:6px"><div style="position:relative;width:96px;height:96px;display:flex;align-items:center;justify-content:center"><div style="position:absolute;inset:0" class="spin">'+ring(96,24,T.ink)+'</div><div class="breathe">'+motif('diamond',T.ink,40,2,{heart:T.maroon,anim:false})+'</div></div><span class="micro">A pause, after '+S.pause.posts.length+' posts</span></div>'+
+ (full?'<div class="card row g12" style="padding:12px"><div style="width:52px;height:64px;border-radius:12px;background:'+p.bg+';display:flex;align-items:center;justify-content:center;flex:none">'+motif(p.m,'#fff',40,3,{anim:false})+'</div><div class="stack g4" style="min-width:0"><b style="font-size:14px">'+esc(p.title)+'</b><span class="small">'+esc(p.who)+' · just now</span></div></div>':'<div class="notice">You’ve been scrolling for about 12 minutes.</div>')+
+ '<div class="stack g8"><h1 class="q">'+QUESTIONS[S.q]+'</h1><button data-act="nextq" class="row g8" style="align-self:flex-start;height:40px;padding:0;border:none;background:none;font-size:14px;font-weight:600">'+I.refresh+'Ask me something else</button></div>'+
+ '<label class="stack g6"><span class="micro">One word is enough</span><input id="word" class="word" maxlength="28" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="your word" value="'+esc(S.word)+'"></label>'+
+ (S.nudge?'<div class="notice stack g10"><span>That doesn’t look like a word. No pressure: skipping takes the same 5 seconds, and it’s honest.</span><div class="row g8"><button class="chip" data-act="nudgeretry">Try a real word</button><button class="chip" data-act="skip">Skip instead</button></div></div>':'')+
+ (S.more?'<div class="stack g8"><div class="row wrap g8">'+['It reminded me of','I noticed','I wish','Honestly,'].map(function(x){return '<button class="chip" data-starter="'+x+'">'+x+'…</button>'}).join('')+'</div><textarea id="thoughts" rows="3" placeholder="Only if you want to.">'+esc(S.text)+'</textarea></div>':'<div class="row g8"><button class="chip" data-act="more">+ Say a little more</button><button class="chip" data-act="voice">Speak instead</button></div>')+
+ '</div><div class="stack g6" style="margin-top:16px"><button class="btn" id="cont" data-act="towheel" '+(S.word.trim().length>=2?'':'disabled')+'>Continue</button><button class="ghost" data-act="skip">'+(P.breath?'Not now · one breath':'Not now')+'</button><p class="small" style="text-align:center">Skipping is always quicker than pretending.</p></div></section>'}
+
+function backoff(){return '<section class="screen between"><div class="stack g20"><div style="align-self:center;padding-top:16px">'+motif('frayed',T.slate,90,3,{})+'</div>'+
+ '<h1 class="title" style="font-size:26px">Pauses haven’t been landing lately.</h1><p class="body">Your last few were skipped or rushed. That tells us something, not about you, about the pauses. What would make them worth it?</p>'+
+ '<div class="stack g10">'+[['fewer','Fewer pauses','Every 15 posts, adaptive rhythm on.'],['tap','Just let me tap a feeling','No typing. One tap on the wheel.'],['dayoff','Take today off','No pauses until tomorrow.'],['keep','Keep things as they are','We’ll ask again in a while.']].map(function(o){return '<button class="choice" style="flex-direction:column;gap:4px" data-backoff="'+o[0]+'"><b style="font-size:16px">'+o[1]+'</b><span class="small">'+o[2]+'</span></button>'}).join('')+'</div>'+
+ '</div></section>'}
+
+function name(){var entry=null;WHEEL.forEach(function(w){if(w[0]===S.core)entry=w});var col=S.core?FEEL[S.core]:T.ink;
+ var pos=[[118,4],[197,37],[230,116],[197,195],[118,228],[39,195],[6,116],[39,37]];
+ return '<section class="screen between" style="padding-top:44px"><div class="stack g16">'+
+ (P.tapOnly?'':'<button class="iconbtn" data-act="towrite" aria-label="Back to writing">'+I.back+'</button>')+
+ '<div class="stack g6"><h1 class="title" style="font-size:26px">Want help naming it?</h1><p class="small">Only if it helps. Your words come first.</p></div>'+
+ (S.word?'<p class="notice" style="font-weight:500;white-space:pre-line;word-break:break-word">“'+esc(S.word)+(S.text.trim()?' — '+esc(S.text.trim()):'')+'”</p>':'<p class="notice">Tap the feeling that fits. That’s the whole pause.</p>')+
+ '<div style="position:relative;width:320px;height:276px;align-self:center;flex:none"><div style="position:absolute;left:40px;top:18px" class="spin">'+ring(240,32,T.warp)+'</div>'+
+ '<div style="position:absolute;left:110px;top:88px;width:100px;height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center">'+(S.core?motif(motifFor({core:S.core}),col,56,S.level,{outline:S.worth===false}):'<span class="small" style="font-weight:600">How did<br>it feel?</span>')+'</div>'+
+ WHEEL.map(function(w,i){var on=S.core===w[0];return '<button class="chip" style="position:absolute;left:'+pos[i][0]+'px;top:'+pos[i][1]+'px;width:84px;justify-content:center;padding:0;'+(on?'background:'+FEEL[w[0]]+';border-color:'+FEEL[w[0]]+';color:#fff':'')+'" data-core="'+w[0]+'" '+ap(on)+'>'+w[0]+'</button>'}).join('')+'</div>'+
+ (S.core?(function(){var m=MEANING[SHAPE[S.core]];return '<div class="card dotted row g12" style="padding:12px 14px">'+motif(SHAPE[S.core],col,44,4,{})+'<span class="small"><b>'+m.name+', '+m.en+'.</b> '+m.why+'</span></div>'})():'')+
+ '<div class="row wrap g8" style="justify-content:center"><button class="chip" data-core="Mixed" '+ap(S.core==='Mixed')+'><span class="sw" style="background:'+T.maroon+'"></span>Mixed</button><button class="chip" data-act="nofeel">I can’t tell</button></div>'+
+ (entry?'<div class="stack g8"><span class="micro">Closer to</span><div class="row wrap g8">'+entry[1].map(function(n){return '<button class="chip" data-nuance="'+n+'" '+ap(S.nuance===n)+'>'+n+'</button>'}).join('')+'</div></div>':'')+
+ (S.core?'<div class="stack g8"><span class="micro">How strongly</span><div class="row g10">'+[1,2,3,4,5].map(function(n){var on=n<=S.level;return '<button data-level="'+n+'" aria-label="Strength '+n+' of 5" '+ap(n===S.level)+' style="width:44px;height:44px;border-radius:22px;border:none;background:none;display:flex;align-items:center;justify-content:center"><span style="width:'+(10+n*3)+'px;height:'+(10+n*3)+'px;border-radius:50%;background:'+(on?col:'#fff')+';border:1.5px solid '+(on?col:'#BDB8B0')+';transition:all .15s"></span></button>'}).join('')+'</div></div>':'')+
+ '<div class="stack g8"><span class="micro">Worth my time?</span><div class="row g8"><button class="chip" data-worth="yes" '+ap(S.worth===true)+'>Yes</button><button class="chip" data-worth="no" '+ap(S.worth===false)+'>No</button><button class="chip" data-worth="unsure" '+ap(S.worth==='unsure')+'>Not sure</button></div></div>'+
+ '</div><div style="margin-top:18px"><button class="btn" data-act="save">Tie the knot</button></div></section>'}
+
+function done(){var e=S.lastSaved,skipped=!e||e.skip,frayed=e&&e.frayed,wait=(skipped||frayed)&&P.breath;
+ var title=skipped?'Skipped, and that’s okay.':frayed?'A loose thread.':'A knot in your weave.';
+ var body=skipped?'An empty knot marks the pause anyway. Noticing you didn’t want to look is noticing too.':frayed?'That one didn’t hold, and that’s okay. It’s woven in as a loose thread, so your weave stays honest.':'Bigger means you felt it more. Breathe with the circle, then go back, or don’t.';
+ return '<section class="screen between"><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;text-align:center">'+
+ '<div style="position:relative;width:200px;height:200px;display:flex;align-items:center;justify-content:center"><div style="position:absolute;inset:0" class="breathe">'+ring(200,36,T.ink)+'</div>'+knotFor(e||{skip:true},skipped?90:110,{})+'</div>'+
+ '<div class="stack g10" style="align-items:center"><h1 class="title" style="font-size:26px">'+title+'</h1>'+(e&&!skipped&&!frayed?(function(){var m=meaningFor(e);return '<p class="body" style="max-width:300px"><b>'+m.name+', '+m.en+'.</b> '+m.why+'</p>'})():'')+'<p class="small" style="max-width:290px">'+body+'</p></div>'+
+ '</div><div class="stack g6"><button class="btn" id="backfeed" data-act="backtofeed" '+(wait?'disabled':'')+'>'+(wait?'Breathe… 5':'Back to the feed')+'</button><button class="ghost" data-act="endsession">I’m done scrolling for now</button></div></section>'}
+
+function crisis(){return '<section class="screen between"><div class="stack g20">'+
+ '<div style="align-self:center;padding-top:10px" class="breathe">'+motif('ladwa',T.maroon,90,3,{})+'</div>'+
+ '<h1 class="title" style="font-size:26px;text-align:center">That sounds really heavy.</h1>'+
+ '<p class="body" style="text-align:center">You don’t have to carry it alone. Afterthought isn’t a counsellor, but people trained to help are available right now, free and confidential.</p>'+
+ '<a class="btn" href="tel:14416" style="text-decoration:none">'+I.phone+'Call Tele-MANAS · 14416</a>'+
+ '<div class="notice small">Tele-MANAS is India’s free, 24×7 national mental health helpline, in many languages. If you are in immediate danger, call <a href="tel:112"><b>112</b></a>.</div>'+
+ '<p class="small" style="text-align:center">Your words were saved privately. Nobody else has been told.</p>'+
+ '</div><div class="stack g6"><button class="btn light" data-act="crisisok">Go to my journal</button><button class="ghost" data-act="endsession">Close the feed for now</button></div></section>'}
+
+/* ---------- pause: recall ---------- */
+function recall(){var truth=S.pause.posts.map(function(p){return p.id}),n=truth.length,full=P.perm==='full';
+ var slots='';for(var i=0;i<n;i++){var id=S.placed[i],p=id?byId(id):null,v='',vc=T.ink;
+  if(S.checked&&!full){v=''}else if(S.checked){if(!p){v='Was: '+short(byId(truth[i]).title);vc='#BDB8B0'}else if(truth.indexOf(id)<0){v='Not in your feed';vc=T.red}else if(truth[i]===id){v='In order';vc=T.leaf}else{v='Was #'+(truth.indexOf(id)+1);vc=T.maroon}}
+  slots+='<li class="row g10"><span style="width:22px;font-weight:700;text-align:center">'+(i+1)+'</span><button class="slot'+(p?' filled':'')+'" data-slot="'+i+'" '+(S.checked||!p?'disabled':'')+' aria-label="'+(p?'Remove '+esc(p.title):'Slot '+(i+1)+' empty')+'"><span>'+(p?esc(short(p.title)):(S.checked?'':'Empty'))+'</span>'+(v?'<span class="verdict" style="display:flex;align-items:center;gap:6px"><i style="width:8px;height:8px;border-radius:4px;background:'+vc+';display:inline-block;flex:none"></i>'+v+'</span>':'')+'</button></li>'}
+ var pool=S.pool.filter(function(p){return S.placed.indexOf(p.id)<0}).map(function(p){return '<button class="chip" data-place="'+p.id+'"><span class="sw" style="background:'+p.bg+'"></span>'+esc(short(p.title))+'</button>'}).join('');
+ var res='';if(S.checked&&!full){res='<div class="card dotted stack g10"><p class="body">In Light mode Afterthought never sees your feed, so it can’t check. Just notice: how sure did you feel about each one?</p><p class="h2" style="font-size:18px;">What made the ones you remembered stick?</p></div>'}else if(S.checked){var inOrder=0,real=0,fake=0;S.placed.forEach(function(id,i){if(truth[i]===id)inOrder++;if(truth.indexOf(id)>=0)real++;else fake++});var miss=truth.filter(function(id){return S.placed.indexOf(id)<0}).map(function(id){return '“'+byId(id).title+'”'});
+  res='<div class="card dotted stack g10"><p class="body">You remembered <b>'+real+' of '+n+'</b>'+(full?', '+inOrder+' in order':'')+'.'+(fake?' You also “remembered” '+fake+' post'+(fake>1?'s':'')+' you never saw.':'')+(miss.length?' Slipped away: '+esc(miss.join(', '))+'.':'')+'</p><p class="h2" style="font-size:18px;">Why do you think those ones stayed with you?</p></div>'}
+ return '<section class="screen between" style="padding-top:44px"><div class="stack g16">'+
+ '<div class="spread"><span class="micro">Recall · '+n+' posts</span><span class="small">'+(full?'Checked against your feed':'Self check, memory only')+'</span></div>'+
+ '<h1 class="title" style="font-size:26px">'+(S.checked?'Here’s what you actually saw.':'What did you just see, in order?')+'</h1>'+
+ (S.checked?'':'<p class="small">Two of these you never saw. Leave a slot empty if you’re not sure.</p>')+
+ '<ol class="stack g8" style="margin:0;padding:0;list-style:none">'+slots+'</ol>'+
+ (!S.checked?'<div class="row wrap g8">'+pool+'</div>':res)+
+ '</div><div class="stack g6" style="margin-top:16px">'+(!S.checked?'<button class="btn" data-act="check" '+(S.placed.length?'':'disabled')+'>Check</button><button class="ghost" data-act="skip">Not now</button>':'<button class="btn" data-act="recallwrite">Write about it</button><button class="ghost" data-act="recalldone">Back to the feed</button>')+'</div></section>'}
+function byId(id){return POSTS.filter(function(p){return p.id===id})[0]}
+function short(s){return s.length>30?s.slice(0,28)+'…':s}
+
+/* ---------- journal ---------- */
+function journal(){var f=S.filter,list=written().filter(function(e){return !e.frayed}).filter(function(e){return f==='all'||(f==='heavy'&&HEAVY.indexOf(e.core)>=0)||(f==='worth'&&e.worth===true)});
+ return '<div class="screen" style="padding-bottom:20px"><div class="stack g16"><div class="spread"><h1 class="title">Journal</h1><span class="small">'+written().length+' entries</span></div>'+daanaRow(342,{anim:true})+
+ '<div class="row g8" role="group" aria-label="Filter">'+[['all','All'],['heavy','Felt heavy'],['worth','Worth it']].map(function(o){return '<button class="chip" data-filter="'+o[0]+'" '+ap(f===o[0])+'>'+o[1]+'</button>'}).join('')+'</div>'+
+ (list.length?list.map(function(e){var col=e.core?FEEL[e.core]:T.ink;return '<article class="entry"><div style="flex:none">'+knotFor(e,48,{anim:false})+'</div><div class="stack g8" style="min-width:0;flex:1"><div class="spread small"><span>'+when(e.t)+'</span><span>'+esc(e.source)+'</span></div>'+(e.post?'<b style="font-size:13px">'+esc(e.post)+'</b>':'')+(e.words?'<p class="words">“'+esc(e.words)+'”</p>':'')+'<div class="spread">'+(e.core?'<span class="pill"><i style="background:'+col+'"></i>'+(e.nuance?esc(e.nuance)+' · ':'')+e.core.toLowerCase()+' · '+meaningFor(e).name.toLowerCase()+'</span>':'<span class="pill">unnamed</span>')+'<button class="chip" style="min-height:36px;padding:0 12px;font-size:12px" data-del="'+e.id+'" aria-label="Delete entry">Delete</button></div>'+(e.sample?'<span class="small" style="font-style:italic">Sample entry</span>':'')+'</div></article>'}).join(''):'<div class="notice">Nothing here yet. Your entries will appear as you pause.</div>')+
+ '</div></div>'+tabs('journal')}
+
+/* ---------- weave + weekly letter ---------- */
+function weavePage(){var es=P.entries,wr=written().filter(function(e){return !e.frayed}),counts={};wr.forEach(function(e){if(e.core)counts[e.core]=(counts[e.core]||0)+1});
+ var top=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a]});var heavy=wr.filter(function(e){return HEAVY.indexOf(e.core)>=0}).length,worth=wr.filter(function(e){return e.worth===true}).length,skips=P.entries.filter(function(e){return e.skip}).length,frayed=P.entries.filter(function(e){return e.frayed}).length;
+ var np=P.entries.length+P.pauses,pl=function(n,w){return n+' '+w+(n===1?'':'s')};
+ var quote=wr.filter(function(e){return e.words&&e.words.length>12}).sort(function(a,b){return b.t-a.t})[0];
+ var intentLine=(P.intentions[0]||'notice how your feed makes you feel').toLowerCase();
+ var letter='This week you paused '+(np===1?'once':np+' times')+' and wrote '+(wr.length===1?'once':wr.length+' times')+'.'+(top[0]?' The feeling that came up most was '+top[0].toLowerCase()+'.':'')+(wr.length?' You marked '+worth+' of '+pl(wr.length,'post')+' as worth your time.':'')+' You came here to '+intentLine+'.';
+ var opts=[['nothing','Nothing for now','Noted. Seeing the pattern is the point.'],['write','Write about the week','A blank page is waiting.'],['quiet','Pause the heavy accounts for a week','Done. You can undo this in Settings.']];var sel=opts.filter(function(o){return o[0]===S.choice})[0];
+ return '<div class="screen" style="padding-bottom:20px"><div class="stack g20"><div class="spread" style="align-items:flex-end"><div class="stack g6"><span class="micro">This week</span><h1 class="title">Your weave</h1></div><button class="chip" data-go="legend">How to read it</button></div>'+
+ '<div class="card dotted" style="padding:16px;display:flex;justify-content:center">'+weave(es,310,{anim:true,next:true,today:true})+'</div>'+
+ '<div class="row wrap g8">'+Object.keys(FEEL).filter(function(k){return counts[k]}).map(function(k){return '<span class="pill"><i style="background:'+FEEL[k]+'"></i>'+k+' '+counts[k]+'</span>'}).join('')+(skips?'<span class="pill"><i style="background:#fff;border:1px dashed #111"></i>Skipped '+skips+'</span>':'')+(frayed?'<span class="pill"><i style="background:'+T.slate+'"></i>Loose threads '+frayed+'</span>':'')+'</div>'+
+ '<div class="card stack g12" style="border-color:#111"><span class="micro" style="display:flex;align-items:center;gap:8px"><i style="width:8px;height:8px;border-radius:4px;background:'+T.maroon+';display:inline-block"></i>A letter from your week</span><p class="body">'+esc(letter)+'</p>'+(quote?'<p class="body" style="font-weight:600">One thing you wrote: “'+esc(quote.words)+'”</p>':'')+(heavy?'<p class="h2" style="font-size:18px">'+heavy+' of your entries felt heavy. What would you like to do with that?</p><div class="stack g8">'+opts.map(function(o){return '<button class="choice" style="padding:14px 16px;font-size:15px;font-weight:500" data-choice="'+o[0]+'" '+ap(S.choice===o[0])+'>'+o[1]+'</button>'}).join('')+'</div>'+(sel?'<p class="small" style="font-weight:600">'+sel[2]+'</p>':''):'')+'</div>'+
+ '<button class="btn light" data-act="share">Share my weave (no words included)</button>'+
+ '</div></div>'+tabs('weave')}
+
+function legend(){var L=function(svg,name,desc){return '<div class="legend-row" style="align-items:flex-start"><div style="width:60px;flex:none;display:flex;justify-content:center">'+svg+'</div><div class="stack g4"><b style="font-size:15px">'+name+'</b><span class="small">'+desc+'</span></div></div>'};
+ var dict=['mor','ambo','chakalo','teer','khajuri','morpag','naughara','chopad'].map(function(k){var m=MEANING[k];return L(motif(k,FEEL[m.feel],56,4,{anim:false}),m.feel+' · '+m.name+', '+m.en,m.why)}).join('')+
+  ['row','knot','hollow','frayed'].map(function(k){var m=MEANING[k];return L(motif(k,k==='knot'||k==='hollow'?T.ink:T.slate,52,3,{anim:false}),m.feel+' · '+m.name,m.why)}).join('');
+ return '<div class="screen" style="padding-bottom:28px"><div class="stack g16">'+head('weave','Weave guide')+'<h1 class="title">How to read your weave</h1><p class="body">Every knot is one pause. Its shape is the feeling, its size how strong it was.</p>'+
+ '<div class="stack"><span class="micro" style="margin:6px 0">Feeling · motif · why</span>'+dict+'</div>'+
+ '<div class="stack"><span class="micro" style="margin:12px 0 6px">The other threads</span>'+
+ L('<div class="row g4">'+['Joy','Calm','Fear','Sadness','Anger'].map(function(k){return '<span style="width:9px;height:9px;border-radius:5px;background:'+FEEL[k]+'"></span>'}).join('')+'</div>','Colour','Each feeling has its own thread colour.')+
+ L('<div class="row g4" style="align-items:center">'+motif('ambo',T.leaf,24,1,{anim:false})+motif('ambo',T.leaf,40,5,{anim:false})+'</div>','Size','How strongly you felt it, 1 to 5.')+
+ L('<div class="row g4">'+motif('ambo',T.leaf,28,4,{anim:false})+motif('ambo',T.leaf,28,4,{anim:false,outline:true})+'</div>','Solid or outline','Solid: worth my time. Outline: it wasn’t.')+
+ L('<svg width="52" height="14" aria-hidden="true"><line x1="0" x2="52" y1="7" y2="7" stroke="'+T.maroon+'" stroke-width="2"/></svg>','Maroon line','The end of a day, after the maroon bands of Ramraj tangaliya.')+
+ L('<svg width="52" height="30" aria-hidden="true">'+[4,12,20,28,36,44].map(function(x){return '<line x1="'+x+'" x2="'+x+'" y1="2" y2="28" stroke="#D9D4CC" stroke-width="1.2"/>'}).join('')+'</svg>','Grey warp','One thread for every 5 posts you scrolled. Knots are tied where you paused, the way daana is twisted onto the warp.')+'</div>'+
+ '<div class="notice stack g6"><b>Why a weave?</b><span class="small">In Tangaliya, a handloom weave from Gujarat, every dot (daana) is tied by hand, so the weaver has to stop. Here, every pause ties one.</span></div>'+
+ '</div></div>'}
+
+/* ---------- settings ---------- */
+function settings(){return '<div class="screen" style="padding-bottom:20px"><div class="stack g16"><h1 class="title">Settings</h1>'+
+ '<div class="stack"><span class="micro" style="margin-bottom:4px">Rhythm</span>'+
+ '<div class="setrow"><b style="font-size:15px">Mode</b><div class="seg" style="width:210px">'+[['reflect','Reflect'],['recall','Recall'],['both','Both']].map(function(m){return '<button style="font-size:12px" data-set="mode" data-val="'+m[0]+'" '+ap(P.mode===m[0])+'>'+m[1]+'</button>'}).join('')+'</div></div>'+
+ '<div class="setrow"><b style="font-size:15px">Pause after</b><div class="seg" style="width:180px">'+[5,10,15].map(function(n){return '<button style="font-size:12px" data-set="count" data-val="'+n+'" '+ap(P.count===n)+'>'+n+'</button>'}).join('')+'</div></div>'+
+ '<div class="setrow"><span>Skip with one breath</span>'+sw(P.breath,'breath','Skip with one breath')+'</div>'+
+ '<div class="setrow"><span>Adaptive rhythm</span>'+sw(P.adaptive,'adaptive','Adaptive rhythm')+'</div>'+
+ '<div class="setrow"><span>Quiet while working</span>'+sw(P.quiet,'quiet','Quiet while working')+'</div>'+
+ '<div class="setrow"><span class="stack g4"><span>Tap-only pauses</span><span class="small">Pick a feeling, no typing.</span></span>'+sw(P.tapOnly,'tapOnly','Tap-only pauses')+'</div>'+
+ '<div class="setrow"><span>Take today off</span>'+sw(P.dayOff,'dayOff','Take today off')+'</div></div>'+
+ '<div class="stack"><span class="micro" style="margin:8px 0 4px">Privacy</span>'+
+ '<div class="setrow"><span class="stack g4"><span>Lock with Face ID / PIN</span><span class="small">Asked every time you open the app.</span></span>'+sw(P.lock,'lock','App lock')+'</div>'+
+ '<div class="setrow"><span>Full mode (sees posts)</span>'+sw(P.perm==='full','perm','Full mode')+'</div>'+
+ '<div class="setrow"><span>Apps watched</span><span class="small" style="text-align:right">'+esc(P.apps.join(', '))+'</span></div>'+
+ '<div class="setrow"><span>Export my journal</span><button class="chip" data-act="export">Download</button></div>'+
+ '<div class="setrow"><span>Remove sample entries</span><button class="chip" data-act="nosamples">Remove</button></div>'+
+ '<div class="setrow" style="border:none"><span>Delete everything</span>'+(S.confirmDelete?'<span class="row g8"><button class="chip" data-act="canceldelete">Cancel</button><button class="chip" style="background:#111;border-color:#111;color:#fff" data-act="deleteall">Delete</button></span>':'<button class="chip" data-act="askdelete">Delete</button>')+'</div></div>'+
+ '<div class="notice stack g8"><b>Support</b><span class="small">Afterthought is a reflection tool, not therapy. If things feel heavy, Tele-MANAS (<a href="tel:14416">14416</a>) is free, confidential and open 24×7.</span></div>'+
+ '<div class="card dotted stack g10" style="align-items:center;text-align:center">'+daanaRow(280)+'<span class="small">Visual language inspired by <b>Tangaliya</b> daana weaving from Gujarat.</span>'+daanaRow(280)+'</div>'+
+ '<button class="ghost" data-act="replay">Replay the introduction</button>'+
+ '</div></div>'+tabs('settings')}
+
+function lock(){return '<section class="screen" style="align-items:center;justify-content:center;gap:24px;text-align:center"><div class="breathe">'+logo(80)+'</div><h1 class="title" style="font-size:26px">Afterthought is locked</h1><p class="small" style="max-width:260px">Your journal is private. Unlock with Face ID or your PIN.</p><button class="btn" style="max-width:260px" data-act="unlock">'+I.lock+'Unlock</button></section>'}
+
+/* ---------- render + events ---------- */
+var V={legend:legend,welcome:welcome,intent:intent,see:see,rhythm:rhythm,today:today,feed:feed,pause:pause,journal:journal,weave:weavePage,settings:settings,lock:lock};
+var timer=null;
+function go(s){S.screen=s;render()}
+function render(){clearInterval(timer);app.innerHTML=V[S.screen]()+'<div class="toast" id="toast" role="status"></div>';
+ var wi=document.getElementById('word');if(wi){wi.addEventListener('input',function(){S.word=wi.value;var c=document.getElementById('cont');if(c)c.disabled=S.word.trim().length<2});wi.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();var c=document.getElementById('cont');if(c&&!c.disabled)c.click()}})}
+ var ta=document.getElementById('thoughts');if(ta){ta.addEventListener('input',function(){S.text=ta.value})}
+ if(S.screen==='feed')watchFeed();
+ if(S.screen==='pause'&&S.step==='done'&&(!S.lastSaved||S.lastSaved.skip||S.lastSaved.frayed)&&P.breath)breathTimer()}
+function breathTimer(){var n=5;timer=setInterval(function(){var b=document.getElementById('backfeed');if(!b){clearInterval(timer);return}n--;if(n<=0){clearInterval(timer);b.disabled=false;b.textContent='Back to the feed'}else b.textContent='Breathe… '+n},1000)}
+function toast(m){var t=document.getElementById('toast');if(!t)return;t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2200)}
+function isMash(s){var t=(s||'').trim().toLowerCase(),L=t.replace(/[^a-zÀ-ɏऀ-ॿ઀-૿]/g,'');if(L.length<2)return true;var indic=/[ऀ-ॿ઀-૿]/.test(L);if(/(.)\1{2,}/.test(L))return true;if(!indic&&L.length>=4&&!/[aeiouy]/.test(L))return true;if(/(asdf|sdfg|dfgh|fghj|ghjk|hjkl|qwer|wert|erty|rtyu|tyui|yuio|uiop|zxcv|xcvb|cvbn|vbnm|qaz|wsx|edc)/.test(L))return true;return false}
+function saveEntry(kind){var p=S.pause&&S.pause.last,e={id:'e'+Date.now(),t:Date.now(),source:(p?(P.apps[0]||'Instagram')+' · '+p.kind:'Instagram'),post:p&&P.perm==='full'?p.title:'',words:'',core:null,nuance:'',level:S.level,worth:null};
+ if(kind==='skip'){e.skip=true;P.escapes++}else if(kind==='frayed'){e.frayed=true;P.escapes++}else{var w=S.word.trim(),m=S.text.trim();e.words=w?(w+(m?' — '+m:'')):m;e.core=S.core;e.nuance=S.nuance;e.worth=S.worth===true?true:S.worth===false?false:null;P.escapes=0}
+ P.entries.unshift(e);persist();S.lastSaved=e;return e}
+function afterPause(){S.pause=null;S.feedRun=null;S.seen=[]}
+
+app.addEventListener('click',function(ev){var el=ev.target.closest('button');if(!el||el.disabled)return;var d=el.dataset;
+ if(d.go){S.confirmDelete=false;go(d.go);return}
+ if(d.intent){var i=P.intentions.indexOf(d.intent);if(i>=0)P.intentions.splice(i,1);else P.intentions.push(d.intent);persist();render();return}
+ if(d.app){var j=P.apps.indexOf(d.app);if(j>=0)P.apps.splice(j,1);else P.apps.push(d.app);persist();render();return}
+ if(d.set){P[d.set]=d.set==='count'?Number(d.val):d.val;persist();render();return}
+ if(d.toggle){if(d.toggle==='perm')P.perm=P.perm==='full'?'light':'full';else P[d.toggle]=!P[d.toggle];persist();render();if(d.toggle==='dayOff')toast(P.dayOff?'Day off. See you tomorrow.':'Welcome back.');return}
+ if(d.core){S.core=S.core===d.core?null:d.core;S.nuance=null;render();return}
+ if(d.nuance){S.nuance=S.nuance===d.nuance?null:d.nuance;render();return}
+ if(d.level){S.level=Number(d.level);render();return}
+ if(d.worth){var v=d.worth==='yes'?true:d.worth==='no'?false:'unsure';S.worth=S.worth===v?null:v;render();return}
+ if(d.place){var n=S.pause.posts.length;if(S.placed.length<n)S.placed.push(d.place);render();return}
+ if(d.slot){var k=Number(d.slot);S.placed=S.placed.filter(function(x,i){return i!==k});render();return}
+ if(d.filter){S.filter=d.filter;render();return}
+ if(d.choice){S.choice=d.choice;render();return}
+ if(d.starter){S.text=(S.text.trim()?S.text.trim()+' ':'')+d.starter+' ';render();var tt=document.getElementById('thoughts');if(tt){tt.focus();tt.setSelectionRange(tt.value.length,tt.value.length)}return}
+ if(d.backoff){S.backoff=false;P.escapes=0;if(d.backoff==='fewer'){P.count=15;P.adaptive=true;persist();afterPause();go('today');toast('Fewer pauses from now on.')}else if(d.backoff==='tap'){P.tapOnly=true;persist();if(S.pause.mode==='reflect')S.step='name';render()}else if(d.backoff==='dayoff'){P.dayOff=true;persist();afterPause();go('today')}else{persist();render()}return}
+ if(d.del){P.entries=P.entries.filter(function(e){return e.id!==d.del});persist();render();toast('Entry deleted from this phone.');return}
+ switch(d.act){
+  case 'finishonb':P.onboarded=true;persist();go('today');break;
+  case 'openfeed':startFeed();break;
+  case 'leavefeed':afterPause();go('today');break;
+  case 'nextq':S.q=(S.q+1)%QUESTIONS.length;render();break;
+  case 'towheel':var w=S.word.trim();if(w.length<2)break;if(CRISIS.test(w+' '+S.text)){saveEntry('honest');S.crisis=true;render();break}
+   if(isMash(w)||(S.text.trim().length>3&&isMash(S.text))){if(S.nudge){saveEntry('frayed');S.nudge=false;S.step='done';render()}else{S.nudge=true;render()}break}
+   S.nudge=false;S.step='name';render();break;
+  case 'nudgeretry':S.nudge=false;S.word='';render();var wi2=document.getElementById('word');if(wi2)wi2.focus();break;
+  case 'more':S.more=true;render();var t3=document.getElementById('thoughts');if(t3)t3.focus();break;
+  case 'voice':var wv=document.getElementById('word');if(wv){wv.focus()}toast('Tap the microphone on your keyboard to speak your word.');break;
+  case 'towrite':S.step='write';render();break;
+  case 'nofeel':S.core=null;S.nuance=null;render();toast('That’s an answer too. Saved without a name.');break;
+  case 'save':saveEntry('honest');S.step='done';render();break;
+  case 'skip':S.nudge=false;saveEntry('skip');S.step='done';if(S.pause)S.pause.mode='reflect';render();break;
+  case 'backtofeed':afterPause();startFeed();break;
+  case 'endsession':afterPause();S.crisis=false;go('today');toast('Session closed. Nicely done.');break;
+  case 'crisisok':afterPause();S.crisis=false;go('journal');break;
+  case 'check':if(S.placed.length){S.checked=true;render()}break;
+  case 'recallwrite':S.pause.mode='reflect';resetReflect();S.q=0;if(P.tapOnly)S.step='name';render();break;
+  case 'recalldone':P.pauses++;persist();afterPause();startFeed();break;
+  case 'share':toast('Weave image saved. Your words never leave this phone.');break;
+  case 'export':var json=JSON.stringify(written(),null,2);try{var file=new File([json],'afterthought-journal.json',{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:'Afterthought journal'}).catch(function(){});break}}catch(e){}var blob=new Blob([json],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='afterthought-journal.json';document.body.appendChild(a);a.click();a.remove();toast('Journal exported.');break;
+  case 'nosamples':P.entries=P.entries.filter(function(e){return !e.sample});persist();render();toast('Sample entries removed.');break;
+  case 'askdelete':S.confirmDelete=true;render();break;
+  case 'canceldelete':S.confirmDelete=false;render();break;
+  case 'deleteall':try{localStorage.removeItem(KEY)}catch(e){}P={onboarded:false,intentions:[],apps:['Instagram','YouTube'],perm:'full',mode:'reflect',count:10,breath:true,quiet:true,adaptive:true,lock:false,dayOff:false,tapOnly:false,escapes:0,scrolled:{},entries:[],pauses:0};S.confirmDelete=false;go('welcome');toast('Everything deleted.');break;
+  case 'replay':go('welcome');break;
+  case 'unlock':go('today');break;
+ }
+});
+window.__AT={motif:motif,weave:weave,knotFor:knotFor,FEEL:FEEL,T:T,SAMPLE:SAMPLE,SAMPLE_SCROLL:SAMPLE_SCROLL};
+render();
+})();
+</script>
+</body>
+</html>
